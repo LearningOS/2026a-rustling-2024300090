@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -39,37 +38,50 @@ where
     }
 }
 
-impl<T> BinarySearchTree<T>
-where
-    T: Ord,
-{
-
+impl<T> BinarySearchTree<T> where T: Ord {
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
-
-    // Insert a value into the BST
+    
     fn insert(&mut self, value: T) {
-        //TODO
+        match self.root {
+            None => self.root = Some(Box::new(TreeNode::new(value))),
+            Some(ref mut node) => node.insert(value),
+        }
     }
 
-    // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        let mut node = &self.root;
+        while let Some(n) = node {
+            match value.cmp(&n.value) {
+                Ordering::Less => node = &n.left,
+                Ordering::Greater => node = &n.right,
+                Ordering::Equal => return true,
+            }
+        }
+        false
     }
 }
 
-impl<T> TreeNode<T>
-where
-    T: Ord,
-{
-    // Insert a node into the tree
+impl<T> TreeNode<T> where T: Ord {
     fn insert(&mut self, value: T) {
-        //TODO
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                match self.left {
+                    None => self.left = Some(Box::new(TreeNode::new(value))),
+                    Some(ref mut l) => l.insert(value),
+                }
+            }
+            Ordering::Greater => {
+                match self.right {
+                    None => self.right = Some(Box::new(TreeNode::new(value))),
+                    Some(ref mut r) => r.insert(value),
+                }
+            }
+            Ordering::Equal => {} // 重复值不插入
+        }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
